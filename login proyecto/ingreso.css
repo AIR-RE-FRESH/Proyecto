@@ -1,0 +1,171 @@
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: black;
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+}
+
+#particles {
+  background: url('http://arnaudel.perso.neuf.fr/Payekhali/Fonds/1280/AS11-40-5873.jpg') top center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#intro {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  padding: 0 1.25rem;
+  width: 100%;
+  text-align: center;
+}
+.overlay {
+  position: fixed;
+  background: rgba(0,0,0,0.5);
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.section{
+    margin: 3.125rem auto;
+    width: 18.75rem;
+    padding: 1.25rem;
+    border: 0.063rem solid #ccc;
+    border-radius: 0.313rem;
+}
+
+.formulario-iniciosesion{
+  padding-top: 2.813rem;
+  padding-bottom: 1.75rem;
+}
+
+.formulario-iniciosesion h1{
+text-align: center;
+font-size: 3rem;
+padding-bottom: 0.75rem;
+color: #f3f0f0;
+}
+
+.formulario-iniciosesion a {
+  display: block;
+  text-align: center; /* Añade esta propiedad para alinear el enlace al centro */
+  margin-top: 1.25rem;
+  color: #bbb7b7;
+}
+
+/* Estilos para el formulario */
+form {
+  max-width: 25rem;
+  margin: 0 auto;
+  padding: 1.25rem;
+  background-color: darkslategray;
+  border-radius: 0.625rem;
+  box-shadow: 0 0 0.625rem rgba(0,0,0,0.2);
+  height: 19rem;
+}
+
+/* Estilos para los campos de entrada */
+input[type=email], input[type=password] {
+  width: 100%;
+  padding: 0.625rem;
+  margin: 0.5rem 0;
+  display: inline-block;
+  border: 0.063rem solid #ccc;
+  box-sizing: border-box;
+  border-radius: 0.313rem;
+}
+
+/* Estilos para el botón de envío */
+input[type=submit] {
+  background-color:royalblue;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  margin: 0.5rem 0;
+  border: none;
+  border-radius: 0.313rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  float: right;
+}
+
+/* Estilos para el botón de envío al pasar el ratón por encima */
+input[type=submit]:hover {
+  background-color: #0a79f0;
+}
+
+section a {
+  transition: color 0.2s ease;
+  color: aliceblue;
+  text-decoration: none;
+}
+
+section a:hover {
+  color: cornflowerblue;
+}
+
+button{
+  background-color: darkslategray;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 0.313rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  float: center;
+}
+
+button:hover{
+  background-color: #0a79f0;
+}
+
+
+.container {
+  max-width: 300px; 
+  padding: 10px; 
+} 
+
+
+footer {
+    margin: 0;
+    padding: 2rem;
+    color: whitesmoke;
+}
+
+footer section {
+    float: right;
+}
+
+footer p {
+    margin: 0;
+    text-align: left;
+}
+
+footer a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+  color: aliceblue;
+}
+
+footer a:hover {
+  color: cornflowerblue;
+}
+
