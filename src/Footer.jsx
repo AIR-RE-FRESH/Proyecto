@@ -11,20 +11,20 @@ function Footer() {
                     <Col className="mx-5">
                         <Stack>
                             <img
-                                src='/logofooter.jpg'
-                                alt="company logo"
+                                src='/logo3.png'
+                                alt="arf logo"
                                 rounded
                                 width={150}
                                 height={150}
                             />
-                            <h2>CHAYOTE</h2>
-                            <p>Tu cancha, tu tienda</p>
+                            <h2>Air Re-Fresh</h2>
+                            <p>El futuro del aire limpio</p>
                         </Stack>
                     </Col>
                     <Col>
                         <Nav className="flex-column fs-5">
                             Links
-                            <a href="https://github.com/SoyGabrielRojas/Olimpiadas" className="text-white">Repositorio de GitHub</a>
+                            <a href="https://github.com/AIR-RE-FRESH/Proyecto" className="text-white">Repositorio de GitHub</a>
                             <Link to="/guia" className="text-white">Manual de usuario</Link>
                             <a href="https://drive.google.com/file/d/1jA3oOTcfbCXPob5WZuWWrPpK1wv_lMi3/view?usp=sharing " className="text-white">Video de ayuda</a>
                         </Nav>

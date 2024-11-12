@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
-import { Wind, Droplets, Fan, Thermometer, BarChart2, Zap, Smartphone, Sun, Moon, ChevronDown, Check, Mail, Phone, Share2, Facebook, Twitter, Instagram, Star, Shield, Leaf, ArrowRight, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Wind, Droplets, Fan, Thermometer, BarChart2, Zap, Smartphone, Sun, Moon, ChevronDown, Mail, Phone, Share2, Facebook, Twitter, Instagram, Star, Shield, Leaf, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -481,7 +481,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-opacity-90 backdrop-blur-sm transition-colors duration-300">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-opacity-90 backdrop-blur-xm transition-colors duration-300">
         <nav className={`mx-auto px-6 py-4 flex justify-between items-center ${darkMode ? 'bg-gray-800/80' : 'bg-white/80'}`}>
           <div className="flex items-center space-x-4 relative">
             <a href="#top" className="block">
