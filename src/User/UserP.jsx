@@ -11,53 +11,78 @@ import EficienciaS from './EficienciaS';
 import Comparativas from './Comparativas';
 import EstadoS from './EstadoS';
 
-const generateMockData = () => ({
-  temperature: Math.random() * (28 - 16) + 16,
-  humidity: Math.random() * (65 - 35) + 35,
-  co: Math.random() * (55 - 0) + 0,
-  ventEfficiency: Math.random() * (100 - 70) + 70,
-  batteryLevel: Math.random() * (100 - 20) + 20,
-  cpuUsage: Math.random() * (100 - 10) + 10,
-  filterStatus: Math.random() > 0.7 ? 'Bueno' : 'Requiere Reemplazo',
-  lastMaintenance: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-})
-
 const idealConditions = {
   temperature: 22,
   humidity: 50,
   co: 25,
-}
+};
 
 const thresholds = {
   temperature: { min: 18, max: 26 },
   humidity: { min: 40, max: 60 },
   co: { max: 50 },
-}
+};
 
-export default function UserP() {
-  const [currentData, setCurrentData] = useState(generateMockData())
-  const [historicalData, setHistoricalData] = useState([])
+const UserP = () => {
+  const [currentData, setCurrentData] = useState({
+    temperature: 0,
+    humidity: 0,
+    co: 0,
+    ventEfficiency: 0,
+    batteryLevel: 100,
+    cpuUsage: 60,
+    filterStatus: 'Bueno',
+    lastMaintenance: new Date().toLocaleDateString(),
+  });
+  const [historicalData, setHistoricalData] = useState([]);
+  const [theme, setTheme] = useState('light');
+
+  async function getData() {
+    try {
+      const response = await fetch('http://192.168.100.10:8000/api/list');
+      if (!response.ok) {
+        throw new Error('Error al obtener datos');
+      }
+      const data = await response.json();
+      const lastData = data[data.length - 1];
+
+      if (lastData) {
+        const newData = {
+          temperature: parseFloat(lastData.Temperatura) || 0,
+          humidity: parseFloat(lastData.Humedad) || 0,
+          co: parseFloat(lastData.Gas) || 0,
+          ventEfficiency: Math.random() * (100 - 70) + 70,
+          batteryLevel: 100,
+          cpuUsage: 60,
+          filterStatus: 'Bueno',
+          lastMaintenance: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+        };
+
+        setCurrentData(newData);
+        setHistoricalData(prevData => [
+          ...prevData.slice(-19),
+          { ...newData, timestamp: new Date().toLocaleTimeString() }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const newData = generateMockData()
-      setCurrentData(newData)
-      setHistoricalData(prevData => [...prevData.slice(-19), { ...newData, timestamp: new Date().toLocaleTimeString() }])
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [])
+    const interval = setInterval(getData, 5000);
+    getData();
+    return () => clearInterval(interval);
+  }, []);
 
   const calculateEfficiencyIndex = (current, ideal, { min, max }) => {
     let efficiency = 0;
 
     if (current < min) {
       efficiency = ((current - min) / (ideal - min)) * 100;
-    }
-    else if (current > max) {
+    } else if (current > max) {
       efficiency = ((max - current) / (max - ideal)) * 100;
-    }
-    else {
+    } else {
       const range = max - min;
       efficiency = 100 - (Math.abs(current - ideal) / range) * 100;
     }
@@ -65,12 +90,11 @@ export default function UserP() {
     return Math.min(Math.max(efficiency, 0), 100);
   };
 
-
   const efficiencyIndices = {
     temperature: calculateEfficiencyIndex(currentData.temperature, idealConditions.temperature, thresholds.temperature),
     humidity: calculateEfficiencyIndex(currentData.humidity, idealConditions.humidity, thresholds.humidity),
     co: calculateEfficiencyIndex(currentData.co, idealConditions.co, { min: 0, max: thresholds.co.max }),
-  }
+  };
 
   const getAlertStatus = () => {
     if (
@@ -83,12 +107,10 @@ export default function UserP() {
       currentData.cpuUsage > 90 ||
       currentData.filterStatus === 'Requiere Reemplazo'
     ) {
-      return 'warning'
+      return 'warning';
     }
-    return 'success'
-  }
-
-  const [theme, setTheme] = useState('light');
+    return 'success';
+  };
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
@@ -206,3 +228,5 @@ export default function UserP() {
     </div>
   )
 }
+
+export default UserP;

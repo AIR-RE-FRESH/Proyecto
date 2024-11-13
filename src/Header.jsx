@@ -7,7 +7,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { useState } from 'react';
-import { Sun, Moon } from 'lucide-react'; 
+import { Sun, Moon } from 'lucide-react';
 
 function Header({ theme, toggleTheme }) {
     let user = JSON.parse(localStorage.getItem('user-info'));
@@ -29,25 +29,43 @@ function Header({ theme, toggleTheme }) {
     return (
         <>
             {[false].map((expand) => (
-                <Navbar sticky="top" bg="dark" data-bs-theme="dark" key={expand} expand={expand} className="bg-body-tertiary mb-3">
-                    <Container fluid>
-                        <Navbar.Brand as={Link} to="/home">CHAYOTE</Navbar.Brand>
-                        <button
-                            onClick={toggleTheme}
-                            className="flex items-center space-x-2 p-2 "
-                        >
-                            {theme === 'light' ? (
-                                <>
-                                    <Moon className="w-5 h-5 text-light" />
-                                    <span className="text-light">Modo Oscuro</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Sun className="w-5 h-5 text-yellow-400" />
-                                    <span className="text-yellow-400">Modo Claro</span>
-                                </>
-                            )}
-                        </button>
+                <Navbar
+                    sticky="top"
+                    bg={theme === 'light' ? 'light' : 'dark'}
+                    data-bs-theme={theme}
+                    key={expand}
+                    expand={expand}
+                    className={`mb-3 ${theme === 'light' ? 'bg-light' : 'bg-dark'} relative`}
+                >
+                    <Container fluid className="flex items-center justify-between">
+                        {/* Logo de la empresa */}
+                        <Navbar.Brand as={Link} to="/home" className="flex items-center space-x-4">
+                            <img
+                                src="./logoB.png"
+                                alt="Logo de la empresa"
+                                className="w-[30%] h-[30%] object-cover"
+                            />
+                        </Navbar.Brand>
+
+                        {/* Botón de cambio de tema centrado */}
+                        <div className="absolute left-1/2 transform -translate-x-1/2">
+                            <button
+                                onClick={toggleTheme}
+                                className="flex items-center space-x-2 p-2"
+                            >
+                                {theme === 'light' ? (
+                                    <>
+                                        <Moon className="w-5 h-5 text-dark" strokeWidth={3} />
+                                        <span className="text-dark font-bold text-lg">Modo Oscuro</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sun className="w-5 h-5 text-yellow-400" strokeWidth={3} />
+                                        <span className="text-yellow-400 font-bold text-lg">Modo Claro</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
                         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
                         <Navbar.Offcanvas bg="dark" data-bs-theme="dark"
                             id={`offcanvasNavbar-expand-${expand}`}
@@ -84,7 +102,7 @@ function Header({ theme, toggleTheme }) {
                                                     <NavDropdown.Item as={Link} to="/userProductList">Lista de Productos</NavDropdown.Item>
                                                     <NavDropdown.Item as={Link} to="/cart">Carrito de Compras</NavDropdown.Item>
                                                 </NavDropdown>
-                                                
+
                                             )}
                                         </>
                                     ) : (
@@ -94,7 +112,7 @@ function Header({ theme, toggleTheme }) {
                                         </>
                                     )}
                                 </Nav>
-                                <br/>
+                                <br />
                                 <Form className="d-flex" onSubmit={handleSearch}>
                                     <Form.Control
                                         type="search"
