@@ -112,18 +112,6 @@ function Header({ theme, toggleTheme }) {
                                         </>
                                     )}
                                 </Nav>
-                                <br />
-                                <Form className="d-flex" onSubmit={handleSearch}>
-                                    <Form.Control
-                                        type="search"
-                                        placeholder="Buscar"
-                                        className="me-2"
-                                        aria-label="Search"
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                    />
-                                    <Button type="submit" variant="outline-success">Buscar</Button>
-                                </Form>
                             </Offcanvas.Body>
                         </Navbar.Offcanvas>
                     </Container>

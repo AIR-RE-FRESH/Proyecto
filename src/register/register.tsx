@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Link } from "react-router-dom"
 
 const languages = {
   es: {
@@ -115,65 +116,102 @@ export default function Registrarse() {
     document.body.classList.toggle('dark', darkMode)
   }, [darkMode])
 
+  const [errors, setErrors] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    acceptTerms: '',
+    acceptPrivacy: '',
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    // Resetear errores antes de la validación
+    setErrors({
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      acceptTerms: '',
+      acceptPrivacy: '',
+    });
+
     if (validateForm()) {
-      console.log('Registration attempt', { fullName, email, password })
-      toast({
-        title: lang === 'en' ? "Registration Successful" : "Registro Exitoso",
-        description: lang === 'en' ? "Welcome to Air Re-Fresh" : "Bienvenido a Air Re-Fresh",
-        duration: 3000,
-      })
+      // Redirigir al usuario a la página de usuario después de un registro exitoso
+      console.log("Formulario válido, redirigiendo a /user...");
+      window.location.href = '/user';
     }
-  }
+  };
 
   const validateForm = () => {
-    if (!fullName || !email || !password || !confirmPassword) {
-      toast({
-        title: lang === 'en' ? "Error" : "Error",
-        description: lang === 'en' ? "Please fill in all fields" : "Por favor, complete todos los campos",
-        duration: 3000,
-        variant: "destructive",
-      })
-      return false
+    let valid = true;
+    const newErrors: any = {};
+
+    // Validar nombre completo
+    if (!fullName) {
+      newErrors.fullName = lang === 'en' ? "Please enter your full name" : "Por favor, ingrese su nombre completo";
+      valid = false;
     }
+
+    // Validar correo electrónico
+    if (!email) {
+      newErrors.email = lang === 'en' ? "Please enter your email" : "Por favor, ingrese su correo electrónico";
+      valid = false;
+    } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      newErrors.email = lang === 'en' ? "Please enter a valid email" : "Por favor, ingrese un correo electrónico válido";
+      valid = false;
+    }
+
+    // Validar contraseña
+    if (!password) {
+      newErrors.password = lang === 'en' ? "Please enter your password" : "Por favor, ingrese su contraseña";
+      valid = false;
+    } else if (password.length < 6) {
+      newErrors.password = lang === 'en' ? "Password must be at least 6 characters" : "La contraseña debe tener al menos 6 caracteres";
+      valid = false;
+    }
+
+    // Validar confirmación de contraseña
     if (password !== confirmPassword) {
-      toast({
-        title: lang === 'en' ? "Error" : "Error",
-        description: lang === 'en' ? "Passwords do not match" : "Las contraseñas no coinciden",
-        duration: 3000,
-        variant: "destructive",
-      })
-      return false
+      newErrors.confirmPassword = lang === 'en' ? "Passwords do not match" : "Las contraseñas no coinciden";
+      valid = false;
     }
-    if (!acceptTerms || !acceptPrivacy) {
-      toast({
-        title: lang === 'en' ? "Error" : "Error",
-        description: lang === 'en' ? "Please accept the terms and privacy policy" : "Por favor, acepte los términos y la política de privacidad",
-        duration: 3000,
-        variant: "destructive",
-      })
-      return false
+
+    // Validar aceptación de términos
+    if (!acceptTerms) {
+      newErrors.acceptTerms = lang === 'en' ? "Please accept the terms and conditions" : "Por favor, acepte los términos y condiciones";
+      valid = false;
     }
-    return true
-  }
+
+    // Validar aceptación de la política de privacidad
+    if (!acceptPrivacy) {
+      newErrors.acceptPrivacy = lang === 'en' ? "Please accept the privacy policy" : "Por favor, acepte la política de privacidad";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPassword = e.target.value
-    setPassword(newPassword)
-    const strength = calculatePasswordStrength(newPassword)
-    setPasswordStrength(strength)
-  }
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    const strength = calculatePasswordStrength(newPassword);
+    setPasswordStrength(strength);
+  };
 
   const calculatePasswordStrength = (password: string) => {
-    let strength = 0
-    if (password.length > 6) strength += 20
-    if (password.match(/[a-z]+/)) strength += 20
-    if (password.match(/[A-Z]+/)) strength += 20
-    if (password.match(/[0-9]+/)) strength += 20
-    if (password.match(/[$@#&!]+/)) strength += 20
-    return strength
-  }
+    let strength = 0;
+    if (password.length > 6) strength += 20;
+    if (password.match(/[a-z]+/)) strength += 20;
+    if (password.match(/[A-Z]+/)) strength += 20;
+    if (password.match(/[0-9]+/)) strength += 20;
+    if (password.match(/[$@#&!]+/)) strength += 20;
+    return strength;
+  };
 
   return (
     <div className={`min-h-screen flex transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-100 via-green-50 to-gray-100'}`}>
@@ -217,10 +255,16 @@ export default function Registrarse() {
           className="w-full max-w-md"
         >
           <Card className={`shadow-xl backdrop-blur-sm ${darkMode ? 'bg-gray-800/80 text-white' : 'bg-white/80'}`}>
-            <CardHeader className="space-y-1">
+            <CardHeader className="space-y-1 relative">
               <div className="flex items-center justify-between mb-4">
-                <Wind className={`h-12 w-12 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                <div className="flex items-center space-x-2">
+                <img
+                  src="./logoB.png"
+                  alt="Logo de la empresa"
+                  className={`h-[35%] w-[35%] object-cover ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}
+                  onClick={() => window.location.href = '/home'}
+                  style={{ cursor: 'pointer' }}
+                />
+                <div className="flex items-center space-x-4 ml-auto">
                   <Select onValueChange={(value) => setLang(value)} defaultValue={lang}>
                     <SelectTrigger className={`w-[100px] ${darkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-200'}`}>
                       <SelectValue placeholder={t.language} />
@@ -243,6 +287,7 @@ export default function Registrarse() {
             <CardContent>
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
+                  {/* Nombre Completo */}
                   <div className="space-y-2">
                     <Label htmlFor="fullName">{t.fullName}</Label>
                     <Input
@@ -253,7 +298,10 @@ export default function Registrarse() {
                       required
                       className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
                     />
+                    {errors.fullName && <p className="text-xs text-red-500">{errors.fullName}</p>}
                   </div>
+
+                  {/* Correo Electrónico */}
                   <div className="space-y-2">
                     <Label htmlFor="email">{t.email}</Label>
                     <Input
@@ -264,7 +312,10 @@ export default function Registrarse() {
                       required
                       className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
                     />
+                    {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                   </div>
+
+                  {/* Contraseña */}
                   <div className="space-y-2">
                     <Label htmlFor="password">{t.password}</Label>
                     <div className="relative">
@@ -289,36 +340,36 @@ export default function Registrarse() {
                     <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
                       {t.passwordStrength} {passwordStrength < 40 ? t.weak : passwordStrength < 70 ? t.medium : t.strong}
                     </p>
+                    {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
                   </div>
+
+                  {/* Confirmar Contraseña */}
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">{t.confirmPassword}</Label>
-                    <div className="relative">
-                      <Input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                        className={`pr-10 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className={`absolute inset-y-0 right-0 pr-3 flex items-center ${darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}
-                        aria-label={showConfirmPassword ? (lang === 'en' ? "Hide password" : "Ocultar contraseña") : (lang === 'en' ? "Show password" : "Mostrar contraseña")}
-                      >
-                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      </button>
-                    </div>
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      className={`pr-10 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
+                    />
+                    {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
                   </div>
+
+                  {/* Términos y Condiciones */}
                   <div className="flex items-center space-x-2">
                     <Checkbox id="terms" checked={acceptTerms} onCheckedChange={setAcceptTerms} />
                     <Label htmlFor="terms" className="text-sm">{t.termsAndConditions}</Label>
                   </div>
+                  {errors.acceptTerms && <p className="text-xs text-red-500">{errors.acceptTerms}</p>}
+
+                  {/* Política de Privacidad */}
                   <div className="flex items-center space-x-2">
                     <Checkbox id="privacy" checked={acceptPrivacy} onCheckedChange={setAcceptPrivacy} />
                     <Label htmlFor="privacy" className="text-sm">{t.privacyPolicy}</Label>
                   </div>
+                  {errors.acceptPrivacy && <p className="text-xs text-red-500">{errors.acceptPrivacy}</p>}
                 </div>
               </form>
             </CardContent>
@@ -329,7 +380,7 @@ export default function Registrarse() {
             </CardFooter>
             <div className="text-center pb-6">
               <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {t.alreadyHaveAccount} <a href="#" className={`${darkMode ? 'text-blue-400' : 'text-blue-600'} hover:underline`}>{t.login}</a>
+                {t.alreadyHaveAccount} <a href="/login" className={`${darkMode ? 'text-blue-400' : 'text-blue-600'} hover:underline`}>{t.login}</a>
               </p>
             </div>
           </Card>
@@ -345,7 +396,9 @@ export default function Registrarse() {
             <Tabs defaultValue="features" className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-4">
                 <TabsTrigger value="features" className="text-sm">{lang === 'en' ? 'Features' : 'Características'}</TabsTrigger>
-                <TabsTrigger value="systemKey" className="text-sm">{t.systemKeyInfo}</TabsTrigger>
+                <div className="col-span-2 flex justify-end">
+                  <TabsTrigger value="systemKey" className="text-sm">{t.systemKeyInfo}</TabsTrigger>
+                </div>
               </TabsList>
               <TabsContent value="features">
                 <div className="space-y-4">

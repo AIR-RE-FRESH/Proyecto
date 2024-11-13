@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Link } from "react-router-dom"
 
 const languages = {
   es: {
@@ -212,48 +213,72 @@ export default function Component() {
     document.body.classList.toggle('dark', darkMode)
   }, [darkMode])
 
+  const [errorMessages, setErrorMessages] = useState({
+    email: '',
+    password: '',
+    systemKey: '',
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    // Resetear los errores antes de la validación
+    setErrorMessages({
+      email: '',
+      password: '',
+      systemKey: '',
+    });
+
     if (validateForm()) {
-      console.log('Login attempt', { email, password, systemKey, rememberMe })
-      toast({
-        title: lang === 'en' ? "Login Successful" : "Inicio de sesión exitoso",
-        description: lang === 'en' ? "Welcome to Air Re-Fresh" : "Bienvenido a Air Re-Fresh",
-        duration: 3000,
-      })
+      // Verificación final de email, contraseña y clave
+      if (email === 'gabicrack01@gmail.com' && password === 'Gabriel123' && systemKey === '123') {
+        setErrorMessages({ email: '', password: '', systemKey: '' });
+        window.location.href = '/user';
+      } else {
+        setErrorMessages({
+          email: email !== 'gabicrack01@gmail.com' ? (lang === 'en' ? "Invalid email" : "Correo incorrecto") : '',
+          password: password !== 'Gabriel123' ? (lang === 'en' ? "Incorrect password" : "Contraseña incorrecta") : '',
+          systemKey: systemKey !== '123' ? (lang === 'en' ? "Incorrect system key" : "Clave de sistema incorrecta") : '',
+        });
+      }
     }
-  }
+  };
 
   const validateForm = () => {
+    let isValid = true;
+    const newErrorMessages: any = {};
+
+    // Validar correo electrónico
     if (!email) {
-      toast({
-        title: lang === 'en' ? "Error" : "Error",
-        description: lang === 'en' ? "Please enter your email" : "Por favor, ingrese su correo electrónico",
-        duration: 3000,
-        variant: "destructive",
-      })
-      return false
+      newErrorMessages.email = lang === 'en' ? "Please enter your email" : "Por favor, ingrese su correo electrónico";
+      isValid = false;
+    } else if (email !== 'gabicrack01@gmail.com') {
+      newErrorMessages.email = lang === 'en' ? "Invalid email" : "Correo incorrecto";
+      isValid = false;
     }
+
+    // Validar contraseña
     if (!password) {
-      toast({
-        title: lang === 'en' ? "Error" : "Error",
-        description: lang === 'en' ? "Please enter your password" : "Por favor, ingrese su contraseña",
-        duration: 3000,
-        variant: "destructive",
-      })
-      return false
+      newErrorMessages.password = lang === 'en' ? "Please enter your password" : "Por favor, ingrese su contraseña";
+      isValid = false;
+    } else if (password !== 'Gabriel123') {
+      newErrorMessages.password = lang === 'en' ? "Incorrect password" : "Contraseña incorrecta";
+      isValid = false;
     }
+
+    // Validar clave del sistema
     if (!systemKey) {
-      toast({
-        title: lang === 'en' ? "Error" : "Error",
-        description: t.systemKeyRequired,
-        duration: 3000,
-        variant: "destructive",
-      })
-      return false
+      newErrorMessages.systemKey = lang === 'en' ? "System key is required" : "Se requiere la clave del sistema";
+      isValid = false;
+    } else if (systemKey !== '123') {
+      newErrorMessages.systemKey = lang === 'en' ? "Incorrect system key" : "Clave de sistema incorrecta";
+      isValid = false;
     }
-    return true
-  }
+
+    setErrorMessages(newErrorMessages);
+    return isValid;
+  };
+
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value
@@ -314,10 +339,16 @@ export default function Component() {
           className="w-full max-w-md"
         >
           <Card className={`shadow-xl backdrop-blur-sm ${darkMode ? 'bg-gray-800/80 text-white' : 'bg-white/80'}`}>
-            <CardHeader className="space-y-1">
+            <CardHeader className="space-y-1 relative">
               <div className="flex items-center justify-between mb-4">
-                <Wind className={`h-12 w-12 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                <div className="flex items-center space-x-2">
+                <img
+                  src="./logoB.png"
+                  alt="Logo de la empresa"
+                  className={`h-[35%] w-[35%] object-cover ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}
+                  onClick={() => window.location.href = '/home'}
+                  style={{ cursor: 'pointer' }}
+                />
+                <div className="flex items-center space-x-4 ml-auto">
                   <Select onValueChange={(value) => setLang(value)} defaultValue={lang}>
                     <SelectTrigger className={`w-[100px] ${darkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-200'}`}>
                       <SelectValue placeholder={t.language} />
@@ -340,31 +371,33 @@ export default function Component() {
             <CardContent>
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
+
+                  {/* Campo de correo electrónico */}
                   <div className="space-y-2">
                     <Label htmlFor="email">{t.email}</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
+                    <Input
+                      id="email"
+                      type="email"
                       placeholder={lang === 'en' ? "you@example.com" : "tu@ejemplo.com"}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      required 
+                      required
                       className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
-                      aria-describedby="email-description"
                     />
-                    <p id="email-description" className="sr-only">{lang === 'en' ? "Enter your email address" : "Ingrese su dirección de correo electrónico"}</p>
+                    {errorMessages.email && <p className="text-xs text-red-500">{errorMessages.email}</p>}
                   </div>
+
+                  {/* Campo de contraseña */}
                   <div className="space-y-2">
                     <Label htmlFor="password">{t.password}</Label>
                     <div className="relative">
-                      <Input 
-                        id="password" 
+                      <Input
+                        id="password"
                         type={showPassword ? "text" : "password"}
                         value={password}
-                        onChange={handlePasswordChange}
-                        required 
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
                         className={`pr-10 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
-                        aria-describedby="password-strength"
                       />
                       <button
                         type="button"
@@ -375,20 +408,19 @@ export default function Component() {
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                       </button>
                     </div>
-                    <Progress value={passwordStrength} className="h-1 mt-2" aria-hidden="true" />
-                    <p id="password-strength" className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
-                      {t.passwordStrength} {passwordStrength < 40 ? t.weak : passwordStrength < 70 ? t.medium : t.strong}
-                    </p>
+                    {errorMessages.password && <p className="text-xs text-red-500">{errorMessages.password}</p>}
                   </div>
+
+                  {/* Campo de clave del sistema */}
                   <div className="space-y-2">
                     <Label htmlFor="systemKey">{t.systemKey}</Label>
                     <div className="relative">
-                      <Input 
-                        id="systemKey" 
+                      <Input
+                        id="systemKey"
                         type={showSystemKey ? "text" : "password"}
                         value={systemKey}
                         onChange={(e) => setSystemKey(e.target.value)}
-                        required 
+                        required
                         className={`pr-10 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
                       />
                       <button
@@ -400,7 +432,10 @@ export default function Component() {
                         {showSystemKey ? <EyeOff className="h-5 w-5" /> : <Key className="h-5 w-5" />}
                       </button>
                     </div>
+                    {errorMessages.systemKey && <p className="text-xs text-red-500">{errorMessages.systemKey}</p>}
                   </div>
+
+                  {/* Recordarme */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Switch
@@ -412,6 +447,11 @@ export default function Component() {
                     </div>
                     <a href="#" className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'} hover:underline`}>{t.forgotPassword}</a>
                   </div>
+
+                  {/* Botón de envío */}
+                  <button type="submit" className="btn-submit">
+                    {t.submit}
+                  </button>
                 </div>
               </form>
             </CardContent>
@@ -431,7 +471,7 @@ export default function Component() {
             </CardFooter>
             <div className="text-center pb-6">
               <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {t.noAccount} <a href="#" className={`${darkMode ? 'text-blue-400' : 'text-blue-600'} hover:underline`}>{t.signUp}</a>
+                {t.noAccount} <a href="/register" className={`${darkMode ? 'text-blue-400' : 'text-blue-600'} hover:underline`}>{t.signUp}</a>
               </p>
             </div>
           </Card>
