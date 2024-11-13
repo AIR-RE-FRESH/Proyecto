@@ -479,6 +479,14 @@ export default function Home() {
     setDarkMode(!darkMode)
   }
 
+  const handleButtonClick = () => {
+    window.location.href = '/manualus.pdf'; // Asegúrate de que el PDF esté en la carpeta public
+  }
+
+  const handleLoginClick = () => {
+    window.location.href = '/login'; // Redirige a la página de login
+  };
+
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <header className="fixed top-0 left-0 right-0 z-50 bg-opacity-90 backdrop-blur-xm transition-colors duration-300">
@@ -557,8 +565,17 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
             >
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10">
+              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10 mr-4" onClick={handleButtonClick}>
                 {t.learnMore}
+              </Button>
+
+              <Button
+                size="lg"
+                variant="outline"
+                className={`${darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'} border-primary hover:bg-primary/10 ml-4`}
+                onClick={handleLoginClick}
+              >
+                Comienza ya!
               </Button>
             </motion.div>
           </div>
