@@ -39,7 +39,7 @@ const UserP = () => {
 
   async function getData() {
     try {
-      const response = await fetch('http://192.168.100.10:8000/api/list');
+      const response = await fetch('http://10.0.9.161:8000/api/list');
       if (!response.ok) {
         throw new Error('Error al obtener datos');
       }
