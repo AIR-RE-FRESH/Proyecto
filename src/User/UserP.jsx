@@ -18,8 +18,8 @@ const idealConditions = {
 };
 
 const thresholds = {
-  temperature: { min: 18, max: 26 },
-  humidity: { min: 40, max: 60 },
+  temperature: { min: 9, max: 40 },
+  humidity: { min: 1, max: 60 },
   co: { max: 50 },
 };
 
