@@ -3,7 +3,7 @@
 // Definiciones para ESP32 con el módulo MQ7 Gas Sensor V2
 #define placa "ESP32"
 #define Voltage_Resolution 3.3 // Voltaje máximo de referencia del ESP32 (3.3V)
-#define pinAOUT 34 // Pin analógico en ESP32 conectado al pin AOUT del módulo
+#define pinAOUT 2 // Pin ADC2_CH2 en el ESP32 conectado al pin AOUT del módulo
 #define type "MQ-7" // Tipo de sensor MQ-7
 #define ADC_Bit_Resolution 12 // El ESP32 tiene un ADC de 12 bits
 #define RatioMQ7CleanAir 27.5 // RS / R0 = 27.5 en aire limpio
