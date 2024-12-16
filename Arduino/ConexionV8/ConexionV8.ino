@@ -1,3 +1,4 @@
+//Aqui se separan las lecturas para intentar que anden los sensores en la placa 
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -5,26 +6,22 @@
 #include <DHTesp.h>
 #include <Adafruit_BMP085.h>
 
-// Pines y definiciones
-int pinDHT = 26;
-DHTesp dht;
-Adafruit_BMP085 bmp;
-
 #define placa "ESP32"
 #define Voltage_Resolution 3.3
 #define pinAOUT 2
 #define type "MQ-7"
 #define ADC_Bit_Resolution 12
 #define RatioMQ7CleanAir 27.5
+#define RELAY_PIN 13
 
 MQUnifiedsensor MQ7(placa, Voltage_Resolution, ADC_Bit_Resolution, pinAOUT, type);
+DHTesp dht;
+Adafruit_BMP085 bmp;
 
+int pinDHT = 26;
 const char* serverName = "http://10.10.2.43:8000/api/guardar";
-
 byte mac[6];
 char mac_Id[18];
-
-const int RELAY_PIN = 13;  // Ventilador
 
 void setup() {
   Serial.begin(115200);
@@ -33,14 +30,23 @@ void setup() {
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, LOW);
 
+  // Inicializar DHT11
   dht.setup(pinDHT, DHTesp::DHT11);
+  Serial.println("DHT11 inicializado");
 
+  // Inicializar BMP?
+  if (!bmp.begin()) {
+    Serial.println("Error: Sensor BMP no encontrado.");
+    while (1);
+  }
+
+  // Inicializar MQ7
   MQ7.setRegressionMethod(1);
   MQ7.setA(99.042);
   MQ7.setB(-1.518);
   MQ7.init();
 
-  Serial.print("Calibrando...");
+  Serial.print("Calibrando MQ7...");
   float calcR0 = 0;
   for (int i = 1; i <= 10; i++) {
     MQ7.update();
@@ -48,8 +54,7 @@ void setup() {
     Serial.print(".");
     delay(500);
   }
-  calcR0 /= 10;
-  MQ7.setR0(calcR0);
+  MQ7.setR0(calcR0 / 10);
   Serial.println(" Calibración completada.");
 
   if (isinf(calcR0) || calcR0 == 0) {
@@ -57,11 +62,7 @@ void setup() {
     while (1);
   }
 
-  if (!bmp.begin()) {
-    Serial.println("Error: Sensor BMP no encontrado.");
-    while (1);
-  }
-
+  // Conexión WiFi
   WiFiManager wm;
   wm.setConfigPortalTimeout(300);
   bool res = wm.autoConnect("pasantes", "pasantes");
@@ -73,21 +74,40 @@ void setup() {
 }
 
 void loop() {
-  controlarRele();
-  EnvioDatos();
-  delay(10000);
+  float ppm = leerMQ7();
+  TempAndHumidity dhtData = leerDHT11();
+  float presion = leerPresionBMP085();
+
+  controlarRele(dhtData.temperature, dhtData.humidity, ppm, presion);
+  enviarDatos(dhtData.temperature, dhtData.humidity, ppm, presion);
+
+  delay(10000); 
 }
 
-void controlarRele() {
+// Función para leer el sensor MQ7
+float leerMQ7() {
   MQ7.update();
-  float ppm = MQ7.readSensor();
+  return MQ7.readSensor();
+}
 
+// Función para leer el sensor DHT11
+TempAndHumidity leerDHT11() {
   TempAndHumidity data = dht.getTempAndHumidity();
-  float temperatura = data.temperature;
-  float humedad = data.humidity + 19;
+  if (isnan(data.temperature) || isnan(data.humidity)) {
+    Serial.println("Error en la lectura del DHT11");
+    data.temperature = 0;
+    data.humidity = 0;
+  }
+  return data;
+}
 
-  float presion = bmp.readPressure() / 100.0;
+// Función para leer el sensor BMP tanto
+float leerPresionBMP085() {
+  return bmp.readPressure() / 100.0; // Conversión a hPa
+}
 
+// Función para controlar el relé
+void controlarRele(float temperatura, float humedad, float ppm, float presion) {
   if ((temperatura < 12 || temperatura > 30) ||
       (humedad < 30 || humedad > 60) ||
       (ppm >= 1.0) ||
@@ -100,7 +120,8 @@ void controlarRele() {
   }
 }
 
-void EnvioDatos() {
+// Función para enviar los datos al servidor
+void enviarDatos(float temperatura, float humedad, float ppm, float presion) {
   if (WiFi.status() == WL_CONNECTED) {
     WiFiClient client;
     HTTPClient http;
@@ -112,15 +133,6 @@ void EnvioDatos() {
     WiFi.macAddress(mac);
     snprintf(mac_Id, sizeof(mac_Id), "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     Serial.println(mac_Id);
-
-    MQ7.update();
-    float ppm = MQ7.readSensor();
-
-    TempAndHumidity data = dht.getTempAndHumidity();
-    float temperatura = data.temperature;
-    float humedad = data.humidity + 19;
-
-    float presion = bmp.readPressure() / 100.0;
 
     String httpRequestData = "{\"Datos\":[{\"MAC\":\"" + String(mac_Id) + "\",\"Temperatura\":\"" + String(temperatura, 2) + "\",\"Humedad\":\"" + String(humedad, 1) + "\",\"Gas\":\"" + String(ppm, 1) + "\",\"Presion\":\"" + String(presion, 2) + "\"}]}";
 
