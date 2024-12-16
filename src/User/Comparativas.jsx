@@ -24,6 +24,7 @@ const Comparativas = ({ theme, historicalData }) => {
             <Line yAxisId="left" type="monotone" dataKey="humidity" stroke="#3b82f6" name="Humedad (%)" />
             <Line yAxisId="right" type="monotone" dataKey="co" stroke="#ca8a04" name="CO (ppm)" />
             <Line yAxisId="left" type="monotone" dataKey="ventEfficiency" stroke="#22c55e" name="Eficiencia de la ventilación (%)" />
+            <Line yAxisId="left" type="monotone" dataKey="presion" stroke="#6b7280" name="Presion (hPa)" />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

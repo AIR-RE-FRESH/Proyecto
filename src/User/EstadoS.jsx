@@ -1,10 +1,10 @@
 import Card, { CardContent, CardHeader, CardTitle } from "./card"
 import Alert, { AlertDescription, AlertTitle } from "./alert"
 import Table, { TableBody, TableCell, TableRow } from "./table"
-import { 
-  AlertTriangleIcon, CheckCircleIcon, GaugeIcon, 
-  ThermometerIcon, DropletIcon, Flame, RefreshCwIcon, 
-  BatteryChargingIcon, CpuIcon, AirVentIcon, CalendarDays 
+import {
+  AlertTriangleIcon, CheckCircleIcon, GaugeIcon,
+  ThermometerIcon, DropletIcon, Flame, RefreshCwIcon,
+  BatteryChargingIcon, CpuIcon, AirVentIcon, CalendarDays, Weight
 } from "lucide-react";
 
 const EstadoS = ({ theme, getAlertStatus, currentData, thresholds }) => {
@@ -89,6 +89,21 @@ const EstadoS = ({ theme, getAlertStatus, currentData, thresholds }) => {
                     </TableCell>
                     <TableCell className="text-yellow-600">
                       Ideal: &lt;{thresholds.co.max} ppm
+                    </TableCell>
+                  </TableRow>
+                  {/* Nueva fila para la presión */}
+                  <TableRow>
+                    <TableCell className="font-medium text-gray-600">
+                      <div className="flex items-center">
+                        <Weight className="w-4 h-4 mr-2 text-gray-600" /> 
+                        Presión
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-gray-700">
+                      {currentData.presion.toFixed(1)} hPa
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      Ideal: {thresholds.presion.min} hPa - {thresholds.presion.max} hPa
                     </TableCell>
                   </TableRow>
                 </TableBody>

@@ -23,6 +23,7 @@ const Trends = ({ theme, historicalData }) => {
             <Line yAxisId="left" type="monotone" dataKey="temperature" stroke="#f97316" name="Temperatura (°C)" />
             <Line yAxisId="left" type="monotone" dataKey="humidity" stroke="#3b82f6" name="Humedad (%)" />
             <Line yAxisId="right" type="monotone" dataKey="co" stroke="#ca8a04" name="CO (ppm)" />
+            <Line yAxisId="left" type="monotone" dataKey="presion" stroke="#6b7280" name="Presión (hPa)" />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

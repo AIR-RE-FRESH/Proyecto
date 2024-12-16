@@ -14,13 +14,15 @@ import EstadoS from './EstadoS';
 const idealConditions = {
   temperature: 22,
   humidity: 50,
-  co: 25,
+  co: 0.50,
+  presion: 1013,
 };
 
 const thresholds = {
-  temperature: { min: 9, max: 40 },
-  humidity: { min: 1, max: 60 },
-  co: { max: 50 },
+  temperature: { min: 12, max: 30 },
+  humidity: { min: 30, max: 60 },
+  co: { max: 1 },
+  presion: { min: 1010, max: 1016 },
 };
 
 const UserP = () => {
@@ -28,6 +30,7 @@ const UserP = () => {
     temperature: 0,
     humidity: 0,
     co: 0,
+    presion: 1012,
     ventEfficiency: 0,
     batteryLevel: 100,
     cpuUsage: 60,
@@ -39,7 +42,7 @@ const UserP = () => {
 
   async function getData() {
     try {
-      const response = await fetch('http://10.0.9.161:8000/api/list');
+      const response = await fetch('http://10.10.2.43:8000/api/list');
       if (!response.ok) {
         throw new Error('Error al obtener datos');
       }
@@ -51,6 +54,7 @@ const UserP = () => {
           temperature: parseFloat(lastData.Temperatura) || 0,
           humidity: parseFloat(lastData.Humedad) || 0,
           co: parseFloat(lastData.Gas) || 0,
+          presion: parseFloat(lastData.Presion) || 1012, // Corregido: Asignar el valor de presión correctamente
           ventEfficiency: Math.random() * (100 - 70) + 70,
           batteryLevel: 100,
           cpuUsage: 60,
@@ -94,6 +98,7 @@ const UserP = () => {
     temperature: calculateEfficiencyIndex(currentData.temperature, idealConditions.temperature, thresholds.temperature),
     humidity: calculateEfficiencyIndex(currentData.humidity, idealConditions.humidity, thresholds.humidity),
     co: calculateEfficiencyIndex(currentData.co, idealConditions.co, { min: 0, max: thresholds.co.max }),
+    presion: calculateEfficiencyIndex(currentData.presion, idealConditions.presion, thresholds.presion),
   };
 
   const getAlertStatus = () => {
@@ -103,6 +108,8 @@ const UserP = () => {
       currentData.humidity < thresholds.humidity.min ||
       currentData.humidity > thresholds.humidity.max ||
       currentData.co > thresholds.co.max ||
+      currentData.presion < thresholds.presion.min ||
+      currentData.presion > thresholds.presion.max ||
       currentData.batteryLevel < 30 ||
       currentData.cpuUsage > 90 ||
       currentData.filterStatus === 'Requiere Reemplazo'

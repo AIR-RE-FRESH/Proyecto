@@ -5,7 +5,6 @@ import Alert, { AlertTitle, AlertDescription } from './alert';
 import { useEffect, useState } from 'react';
 
 const Eficiencia = ({ theme, efficiencyIndices, currentData, idealConditions, thresholds }) => {
-
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -13,6 +12,7 @@ const Eficiencia = ({ theme, efficiencyIndices, currentData, idealConditions, th
       { name: 'Temperatura', value: efficiencyIndices.temperature },
       { name: 'Humedad', value: efficiencyIndices.humidity },
       { name: 'Concentración de CO', value: efficiencyIndices.co },
+      { name: 'Presión', value: efficiencyIndices.presion }, // Agregado para Presión
     ]);
   }, [efficiencyIndices]);
 
@@ -36,6 +36,7 @@ const Eficiencia = ({ theme, efficiencyIndices, currentData, idealConditions, th
               <Cell fill="#f97316" />
               <Cell fill="#3b82f6" />
               <Cell fill="#ca8a04" />
+              <Cell fill="#4b5563" /> {/* Color agregado para Presión */}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
@@ -65,6 +66,15 @@ const Eficiencia = ({ theme, efficiencyIndices, currentData, idealConditions, th
             <p className={`${theme === 'light' ? 'text-yellow-600' : 'text-yellow-300'} text-sm`}>
               Representa qué tan por debajo del nivel máximo seguro ({thresholds.co.max} ppm) siendo que la concentración actual de CO es de: ({currentData.co.toFixed(1)} ppm).
               Una mayor eficiencia indica una mejor calidad del aire y menores riesgos para la salud.
+            </p>
+          </div>
+          <div>
+            <h3 className={`${theme === 'light' ? 'text-gray-700' : 'text-gray-400'} text-lg font-semibold`}>
+              Eficiencia de la Presión: {efficiencyIndices.presion.toFixed(1)}%
+            </h3>
+            <p className={`${theme === 'light' ? 'text-gray-600' : 'text-gray-300'} text-sm`}>
+              Evalúa qué tan cerca está la presión actual ({currentData.presion} hPa) del rango ideal de presión ({idealConditions.presion.min} - {idealConditions.presion.max} hPa).
+              Una eficiencia alta sugiere condiciones ideales para el sistema y su entorno.
             </p>
           </div>
           <Alert className={`${theme === 'light' ? 'bg-white' : 'bg-gray-700'} border-none`}>
